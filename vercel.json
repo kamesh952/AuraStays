@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "name": "skyline-stay",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build"
+    }
+  ],
+  "scripts": {
+    "build": "react-scripts build"
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
