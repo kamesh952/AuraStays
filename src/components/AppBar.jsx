@@ -378,7 +378,7 @@ export default function CustomAppBar({ children, open }) {
                 }),
               }}
             >
-              Skyline Stays
+              Aura Stays
             </LogoTypography>
           </Box>
           <GrowDiv />
