@@ -1,0 +1,18 @@
+{
+  "services": [
+    {
+      "type": "static_site",
+      "name": "my-react-app",
+      "env": "static",
+      "buildCommand": "npm run build",
+      "staticPublishPath": "build",
+      "routes": [
+        {
+          "type": "rewrite",
+          "source": "/(.*)",
+      "destination": "/"
+        }
+      ]
+    }
+  ]
+}
