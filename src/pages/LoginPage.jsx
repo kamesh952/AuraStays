@@ -11,7 +11,9 @@ import {
   CircularProgress,
   Alert,
   InputAdornment,
-  IconButton
+  IconButton,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { Email, Lock, Visibility, VisibilityOff, Bed, Restaurant, Pool, Wifi } from '@mui/icons-material';
 import { cardStyle, formStyle } from '../styles';
@@ -89,12 +91,12 @@ const ParticleBackground = () => {
   );
 };
 
-const FloatingIcons = () => {
+const FloatingIcons = ({ isMobile }) => {
   const icons = [
-    { icon: <Bed />, size: 40, speed: 1.5, left: '10%', top: '20%' },
-    { icon: <Restaurant />, size: 35, speed: 2, left: '85%', top: '30%' },
-    { icon: <Pool />, size: 45, speed: 1, left: '15%', top: '70%' },
-    { icon: <Wifi />, size: 30, speed: 2.5, left: '80%', top: '60%' }
+    { icon: <Bed />, size: isMobile ? 30 : 40, speed: 1.5, left: '10%', top: '20%' },
+    { icon: <Restaurant />, size: isMobile ? 25 : 35, speed: 2, left: '85%', top: '30%' },
+    { icon: <Pool />, size: isMobile ? 35 : 45, speed: 1, left: '15%', top: '70%' },
+    { icon: <Wifi />, size: isMobile ? 20 : 30, speed: 2.5, left: '80%', top: '60%' }
   ];
   
   return (
@@ -132,6 +134,10 @@ export default function LoginPage() {
   const { login, currentUser } = useAuth();
   const navigate = useNavigate();
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+
   useEffect(() => {
     if (currentUser) {
       navigate('/dashboard');
@@ -160,24 +166,31 @@ export default function LoginPage() {
       alignItems: 'center',
       minHeight: '100vh',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      padding: isMobile ? '16px' : '24px'
     }}>
       <ParticleBackground />
-      <FloatingIcons />
+      <FloatingIcons isMobile={isMobile} />
       
       <Paper sx={{ 
         ...cardStyle, 
-        width: 400,
+        width: isMobile ? '100%' : isTablet ? '75%' : 400,
+        maxWidth: 400,
         position: 'relative',
         zIndex: 1,
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+        padding: isMobile ? '20px' : '30px'
       }}>
-        <Typography variant="h4" align="center" gutterBottom sx={{ color: '#3f37c9' }}>
+        <Typography variant={isMobile ? 'h5' : 'h4'} align="center" gutterBottom sx={{ color: '#3f37c9' }}>
           Hotel Management
         </Typography>
-        <Typography variant="body1" align="center" sx={{ mb: 3, color: 'text.secondary' }}>
+        <Typography variant="body1" align="center" sx={{ 
+          mb: 3, 
+          color: 'text.secondary',
+          fontSize: isMobile ? '0.875rem' : '1rem'
+        }}>
           Sign in to your account
         </Typography>
 
@@ -187,7 +200,12 @@ export default function LoginPage() {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={formStyle}>
+        <Box component="form" onSubmit={handleSubmit} sx={{
+          ...formStyle,
+          '& .MuiTextField-root': {
+            marginBottom: isMobile ? '12px' : '16px'
+          }
+        }}>
           <TextField
             fullWidth
             label="Email"
@@ -196,10 +214,11 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             margin="normal"
+            size={isMobile ? 'small' : 'medium'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Email color="primary" />
+                  <Email color="primary" fontSize={isMobile ? 'small' : 'medium'} />
                 </InputAdornment>
               ),
             }}
@@ -213,10 +232,11 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             margin="normal"
+            size={isMobile ? 'small' : 'medium'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Lock color="primary" />
+                  <Lock color="primary" fontSize={isMobile ? 'small' : 'medium'} />
                 </InputAdornment>
               ),
               endAdornment: (
@@ -224,8 +244,12 @@ export default function LoginPage() {
                   <IconButton 
                     onClick={() => setShowPassword(!showPassword)}
                     edge="end"
+                    size={isMobile ? 'small' : 'medium'}
                   >
-                    {showPassword ? <VisibilityOff color="primary" /> : <Visibility color="primary" />}
+                    {showPassword ? 
+                      <VisibilityOff color="primary" fontSize={isMobile ? 'small' : 'medium'} /> : 
+                      <Visibility color="primary" fontSize={isMobile ? 'small' : 'medium'} />
+                    }
                   </IconButton>
                 </InputAdornment>
               ),
@@ -236,11 +260,11 @@ export default function LoginPage() {
             type="submit"
             variant="contained"
             fullWidth
-            size="large"
+            size={isMobile ? 'medium' : 'large'}
             disabled={loading}
             sx={{ 
-              mt: 3, 
-              mb: 2,
+              mt: isMobile ? 2 : 3, 
+              mb: isMobile ? 1 : 2,
               background: 'linear-gradient(45deg, #4361ee 0%, #3f37c9 100%)',
               '&:hover': {
                 background: 'linear-gradient(45deg, #3f37c9 0%, #4361ee 100%)'
@@ -250,7 +274,10 @@ export default function LoginPage() {
             {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
           </Button>
 
-          <Typography variant="body2" align="center" sx={{ color: 'text.secondary' }}>
+          <Typography variant="body2" align="center" sx={{ 
+            color: 'text.secondary',
+            fontSize: isMobile ? '0.75rem' : '0.875rem'
+          }}>
             Don't have an account?{' '}
             <Link href="/register" underline="hover" color="primary">
               Register

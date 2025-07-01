@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { 
   Paper, 
   Table, 
@@ -10,8 +10,7 @@ import {
   Typography,
   Avatar,
   Chip,
-  Box,
-  CircularProgress
+  Box
 } from '@mui/material';
 import { cardStyle } from '../styles';
 import {
@@ -21,58 +20,28 @@ import {
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
-import axios from 'axios';
 
 export default function RecentBookings() {
-  const [recentBookings, setRecentBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchRecentBookings = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/bookings');
-        // Sort by most recent check-in date and take first 5
-        const sortedBookings = response.data
-          .sort((a, b) => new Date(b.check_in) - new Date(a.check_in))
-          .slice(0, 5);
-        
-        setRecentBookings(sortedBookings);
-      } catch (err) {
-        setError(err.message || 'Failed to load bookings');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecentBookings();
-  }, []);
-
-  if (loading) {
-    return (
-      <Paper sx={cardStyle}>
-        <Typography variant="h6" gutterBottom>
-          Recent Bookings
-        </Typography>
-        <Box display="flex" justifyContent="center" p={3}>
-          <CircularProgress />
-        </Box>
-      </Paper>
-    );
-  }
-
-  if (error) {
-    return (
-      <Paper sx={cardStyle}>
-        <Typography variant="h6" gutterBottom>
-          Recent Bookings
-        </Typography>
-        <Typography color="error" align="center" p={2}>
-          {error}
-        </Typography>
-      </Paper>
-    );
-  }
+  // Sample data - replace with real API data
+  const recentBookings = [
+    {
+      id: '1',
+      guest: { name: 'John Doe', avatar: 'JD' },
+      room: { number: '101', type: 'Deluxe' },
+      checkIn: '2023-06-15',
+      checkOut: '2023-06-20',
+      status: 'confirmed'
+    },
+    {
+      id: '2',
+      guest: { name: 'Jane Smith', avatar: 'JS' },
+      room: { number: '205', type: 'Suite' },
+      checkIn: '2023-06-16',
+      checkOut: '2023-06-18',
+      status: 'confirmed'
+    },
+    // Add more sample bookings as needed
+  ];
 
   return (
     <Paper sx={cardStyle}>
@@ -91,30 +60,30 @@ export default function RecentBookings() {
           </TableHead>
           <TableBody>
             {recentBookings.map((booking) => (
-              <TableRow key={booking._id || booking.id}>
+              <TableRow key={booking.id}>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>
                     <Avatar sx={{ width: 32, height: 32 }}>
-                      {booking.guest?.name?.charAt(0) || 'G'}
+                      {booking.guest.avatar}
                     </Avatar>
-                    {booking.guest?.name || 'Guest'}
+                    {booking.guest.name}
                   </Box>
                 </TableCell>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>
                     <HotelIcon fontSize="small" />
-                    {booking.room?.number || 'N/A'} ({booking.room?.type || 'Unknown'})
+                    {booking.room.number} ({booking.room.type})
                   </Box>
                 </TableCell>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>
                     <EventIcon fontSize="small" />
-                    {new Date(booking.check_in).toLocaleDateString()} to {new Date(booking.check_out).toLocaleDateString()}
+                    {booking.checkIn} to {booking.checkOut}
                   </Box>
                 </TableCell>
                 <TableCell align="right">
                   <Chip 
-                    label={booking.status || 'pending'}
+                    label={booking.status}
                     color={booking.status === 'confirmed' ? 'success' : 'error'}
                     size="small"
                     icon={booking.status === 'confirmed' ? 
